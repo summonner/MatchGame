@@ -2,12 +2,12 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace Summoner.MatchGame {
-	public struct CoordConverter {
+	public class CoordConverter : MonoBehaviour {
 		public Vector2 spacing { get; private set; }
 		public float cellRadius { get; private set; }
 		public float gap { get; private set; }
 
-		public CoordConverter( float cellRadius, float gap ){
+		public void Init( float cellRadius, float gap ){
 			this.cellRadius = cellRadius;
 			this.gap = gap;
 			spacing = new Vector2(
@@ -24,10 +24,20 @@ namespace Summoner.MatchGame {
 			return position;
 		}
 
+		public Vector3 Hex2World( CubeCoordinate hex ) {
+			var local = Hex2Board( hex );
+			return transform.TransformPoint( local );
+		}
+
 		public CubeCoordinate Board2Hex( Vector3 board ) {
 			var x = board.x / spacing.x;
 			var z = board.y / spacing.y - 0.5f * x;
 			return CubeCoordinate.CubeRound( x, z );
+		}
+
+		public CubeCoordinate World2Hex( Vector3 world ) {
+			var local = transform.InverseTransformPoint( world );
+			return Board2Hex( local );
 		}
 	}
 }

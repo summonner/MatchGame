@@ -7,7 +7,7 @@ namespace Summoner.MatchGame {
 		public CoordConverter converter;
 
 		public void OnBeginDrag( PointerEventData eventData ) {
-			var selected = Convert( eventData.pointerPressRaycast.worldPosition );
+			var selected = converter.World2Hex( eventData.pointerPressRaycast.worldPosition );
 			var drag = Vector3.Normalize( eventData.pointerCurrentRaycast.worldPosition - eventData.pointerPressRaycast.worldPosition );
 			var direction = converter.Board2Hex( drag );
 			Debug.Log( $"{selected}, {direction}" );
@@ -19,14 +19,8 @@ namespace Summoner.MatchGame {
 		}
 
 		public void OnPointerDown( PointerEventData eventData ) {
-			var selected = Convert( eventData.pointerCurrentRaycast.worldPosition );
+			var selected = converter.World2Hex( eventData.pointerCurrentRaycast.worldPosition );
 			Debug.Log( selected );
-		}
-
-		private CubeCoordinate Convert( Vector3 world ) {
-			var p = transform.InverseTransformPoint( world );
-			return converter.Board2Hex( p );
-
 		}
 	}
 }

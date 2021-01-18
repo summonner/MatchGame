@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Summoner.Util.Extension;
 
 namespace Summoner.MatchGame {
-	[SelectionBase]
 	public class BoardGenerator : MonoBehaviour {
+		[SerializeField] private Game game = null;
 		[SerializeField] private GameObject template = null;
 		[SerializeField] private float cellRadius = 0.5f;
 		[SerializeField] private float gap = 0.02f;
@@ -12,33 +12,48 @@ namespace Summoner.MatchGame {
 
 		void Awake() {
 			Debug.Assert( template != null );
+			Debug.Assert( game != null );
 
-			var converter = new CoordConverter( cellRadius, gap );
-			var pivot = CreatePivot();
-			Bounds bounds = new Bounds();
+			var container = CreateContainer();
 
-			foreach ( var position in TraversePoints() ) {
-				var cell = SpawnCell( pivot );
-				cell.name = position.ToString();
-				cell.localPosition = converter.Hex2Board( position );
+			var converter = container.gameObject.AddComponent<CoordConverter>();
+			converter.Init( cellRadius, gap );
 
-				bounds.Encapsulate( cell.localPosition );
-			}
+			var cells = SpawnCells( converter, container );
 
-			bounds.Expand( cellRadius * 2 );
-			var inputReceiver = AddInputReceiver( pivot, bounds );
+			var bounds = CalculateBounds( cells );
+			var inputReceiver = AddInputReceiver( container, bounds );
 			inputReceiver.converter = converter;
 
+			var columns = new List<Column>( BuildColumns() );
+
+			var board = gameObject.GetOrAddComponent<Board>();
+			board.Init( cells, converter, columns );
+
 			Destroy( this );
+			game.Init( board );
 		}
 
-		private Transform CreatePivot() {
-			var pivotObj = new GameObject( "Cells" );
-			pivotObj.layer = gameObject.layer;
+		private Transform CreateContainer() {
+			var containerObj = new GameObject( "Cells" );
+			containerObj.layer = gameObject.layer;
 
-			var pivot = pivotObj.transform;
-			pivot.Reset( transform );
-			return pivot;
+			var container = containerObj.transform;
+			container.Reset( transform );
+			return container;
+		}
+
+		private IDictionary<CubeCoordinate, Cell> SpawnCells( CoordConverter converter, Transform container ) {
+			var cells = new SortedList<CubeCoordinate, Cell>( size * size, new BottomLeftToTopRight() );
+
+			foreach ( var coord in TraversePoints() ) {
+				var cellObj = Instantiate( template, container );
+				var cell = cellObj.GetOrAddComponent<Cell>();
+				cell.Init( coord, converter.Hex2Board( coord ) );
+				cells.Add( coord, cell );
+			}
+
+			return cells;
 		}
 
 		private IEnumerable<CubeCoordinate> TraversePoints() {
@@ -50,11 +65,6 @@ namespace Summoner.MatchGame {
 			}
 		}
 
-		private Transform SpawnCell( Transform parent ) {
-			var cell = Instantiate( template, parent );
-			return cell.transform;
-		}
-
 		private InputReceiver AddInputReceiver( Transform pivot, Bounds bounds ) {
 			pivot.localPosition -= bounds.center;
 			var pivotObj = pivot.gameObject;
@@ -64,6 +74,41 @@ namespace Summoner.MatchGame {
 			collider.offset = bounds.center;
 
 			return pivotObj.AddComponent<InputReceiver>();
+		}
+
+		private Bounds CalculateBounds( IDictionary<CubeCoordinate, Cell> cells ) {
+			var bounds = new Bounds();
+			
+			foreach ( var cell in cells.Values ) {
+				bounds.Encapsulate( cell.transform.localPosition );
+			}
+
+			bounds.Expand( cellRadius );
+			return bounds;
+		}
+
+		private IEnumerable<Column> BuildColumns() {
+			for ( var x = 0; x < size; ++x ) {
+				var offset = x / 2;
+				var bottom = new CubeCoordinate( x, -offset );
+				var spawner = new CubeCoordinate( x, size - 1 - offset );
+				yield return new Column( bottom, FlatTopDirection.N, spawner, (x & 1) == 1 );
+			}
+		}
+
+		private class BottomLeftToTopRight : IComparer<CubeCoordinate> {
+			public int Compare( CubeCoordinate left, CubeCoordinate right ) {
+				var heightDiff = Height( left ) - Height( right );
+				if ( heightDiff != 0 ) {
+					return heightDiff;
+				}
+
+				return left.x - right.x;
+			}
+
+			private int Height( CubeCoordinate coord ) {
+				return coord.z - coord.y;
+			}
 		}
 	}
 }
