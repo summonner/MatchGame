@@ -10,12 +10,13 @@ namespace Summoner.MatchGame {
 			this.board = board;
 		}
 
-		IEnumerator Start() {
+		async void Start() {
 			Debug.Assert( board != null );
 
+			var fillBoard = new FillBoard();
 			//while ( true ) {
 			//	do {
-					StartCoroutine( board.Fill() );
+				await fillBoard.Do( board );
 			//	} while ( board.Match() );
 
 			//	var input = await WaitInput();
@@ -25,7 +26,6 @@ namespace Summoner.MatchGame {
 			//		Undo( input );
 			//	}
 			//}
-			yield break;
 		}
 
 	}

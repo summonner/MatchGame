@@ -3,9 +3,9 @@ using Summoner.Util;
 using System.Collections.Generic;
 
 namespace Summoner.MatchGame {
-	public class Block : MonoBehaviour {
 
-		public enum Elemental { 
+	public interface IBlock {
+		enum Elemental {
 			Water,
 			Wind,
 			Earth,
@@ -13,8 +13,13 @@ namespace Summoner.MatchGame {
 			Light,
 			Dark,
 			Gold,
-		}
+		};
 
-		public Elemental elemental { get; private set; }
+		Elemental elemental { get; }
+	}
+
+	public class Block : MonoBehaviour, IBlock {
+
+		public IBlock.Elemental elemental { get; private set; }
 	}
 }
