@@ -118,6 +118,14 @@ namespace Summoner.MatchGame
 			return Mathf.Max(x, y, z);
 		}
 
+		public static CubeCoordinate operator -( CubeCoordinate coord )
+		{
+			var x = -coord.x;
+			var y = -coord.y;
+			var z = -coord.z;
+			return new CubeCoordinate( x, y, z );
+		}
+
 		public static CubeCoordinate operator +( CubeCoordinate left, CubeCoordinate right )
 		{
 			var x = left.x + right.x;
