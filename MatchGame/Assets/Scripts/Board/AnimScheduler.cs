@@ -17,7 +17,7 @@ namespace Summoner.MatchGame {
 		IEnumerator DropAux( Transform cell, Transform block ) {
 			var start = block.position;
 			var end = cell.position;
-
+			Debug.DrawLine( start, end, Color.white, 1 );
 			var v = 0.0f;
 			++isPlaying;
 			do {
@@ -26,7 +26,7 @@ namespace Summoner.MatchGame {
 					var p = block.position;
 					p.y += v * Time.deltaTime;
 					var t = (p.y - end.y) / (start.y - end.y);
-					p.x = Mathf.Lerp( start.x, end.x, t );
+					p.x = Mathf.Lerp( end.x, start.x, t );
 					block.position = p;
 					yield return null;
 				}

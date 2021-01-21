@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 
 namespace Summoner.MatchGame {
-	public struct Column : IEnumerable<CubeCoordinate> {
+	public struct Column {
 		public readonly CubeCoordinate bottom;
 		public readonly CubeCoordinate up;
 		public readonly CubeCoordinate top;
@@ -16,15 +16,18 @@ namespace Summoner.MatchGame {
 			this.hasSpawner = hasSpawner;
 		}
 
-		public IEnumerator<CubeCoordinate> GetEnumerator() {
+		public IEnumerable<CubeCoordinate> BottomToTop() {
 			for ( var coord = bottom; coord != top; coord += up ) {
 				yield return coord;
 			}
 			yield return top;
 		}
 
-		IEnumerator IEnumerable.GetEnumerator() {
-			return GetEnumerator();
+		public IEnumerable<CubeCoordinate> TopToBottom() {
+			for ( var coord = top; coord != bottom; coord -= up ) {
+				yield return coord;
+			}
+			yield return bottom;
 		}
 	}
 }

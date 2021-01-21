@@ -92,7 +92,7 @@ namespace Summoner.MatchGame {
 				var offset = x / 2;
 				var bottom = new CubeCoordinate( x, -offset );
 				var spawner = new CubeCoordinate( x, size - 1 - offset );
-				yield return new Column( bottom, FlatTopDirection.N, spawner, (x & 1) == 1 );
+				yield return new Column( bottom, FlatTopDirection.N, spawner, x == 3 );
 			}
 		}
 
