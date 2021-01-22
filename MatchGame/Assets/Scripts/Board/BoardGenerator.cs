@@ -31,7 +31,7 @@ namespace Summoner.MatchGame {
 			board.Init( cells, converter, columns );
 
 			Destroy( this );
-			game.Init( board );
+			game.Init( board, inputReceiver );
 		}
 
 		private Transform CreateContainer() {

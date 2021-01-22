@@ -88,6 +88,20 @@ namespace Summoner.MatchGame.Test {
 			return Task.FromResult( true );
 		}
 
+		public void Destroy( CubeCoordinate coord ) { 
+			if ( cells.TryGetValue( coord, out var cell ) == false ) {
+				return;
+			}
+
+			cell.block = null;
+		}
+
+		public void Destroy( IEnumerable<CubeCoordinate> coords ) {
+			foreach ( var coord in coords ) {
+				Destroy( coord );
+			}
+		}
+
 		private class TestCell : ICell {
 			public CubeCoordinate coord { get; set; }
 			public IBlock block { get; set; }

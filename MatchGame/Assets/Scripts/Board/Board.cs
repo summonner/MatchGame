@@ -15,6 +15,8 @@ namespace Summoner.MatchGame {
 		void Swap( CubeCoordinate from, CubeCoordinate to );
 		void Drop( CubeCoordinate from, CubeCoordinate to );
 		IBlock Spawn( CubeCoordinate coord, CubeCoordinate offset );
+		void Destroy( IEnumerable<CubeCoordinate> coords );
+		void Destroy( CubeCoordinate coord );
 
 		Task WaitAnim();
 	}
@@ -96,6 +98,25 @@ namespace Summoner.MatchGame {
 		private IEnumerator WaitAnim( TaskCompletionSource<bool> onFinished ) {
 			yield return new WaitWhile( () => ( anim.isPlaying > 0 ) );
 			onFinished.SetResult( true );
+		}
+
+		public void Destroy( IEnumerable<CubeCoordinate> coords ) {
+			foreach ( var coord in coords ) {
+				Destroy( coord );
+			}
+		}
+
+		public void Destroy( CubeCoordinate coord ) {
+			if ( cells.TryGetValue( coord, out var cell ) == false ) {
+				return;
+			}
+
+			if ( cell.block == null ) {
+				return;
+			}
+
+			Destroy( cell.block.gameObject );
+			cell.block = null;
 		}
 	}
 }
