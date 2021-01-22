@@ -6,15 +6,15 @@ namespace Summoner.MatchGame {
 	public class AnimScheduler : MonoBehaviour {
 		[SerializeField] float gravity = -40.0f;
 		[SerializeField] float bounce = 0.2f;
-		[SerializeField] float threshold = -1f;
+		[SerializeField] float threshold = -10f;
 
 		public int isPlaying { get; private set; }
 
 		public Coroutine Drop( Cell cell ) {
-			return StartCoroutine( DropAux( cell.transform, cell.block.transform ) );
+			return StartCoroutine( Lerp( cell.transform, cell.block.transform ) );
 		}
 		
-		IEnumerator DropAux( Transform cell, Transform block ) {
+		IEnumerator FreeFall( Transform cell, Transform block ) {
 			var start = block.position;
 			var end = cell.position;
 			Debug.DrawLine( start, end, Color.white, 1 );
@@ -41,6 +41,18 @@ namespace Summoner.MatchGame {
 			} while ( true );
 
 			block.position = end;
+			--isPlaying;
+		}
+
+		private IEnumerator Lerp( Transform cell, Transform block ) {
+			++isPlaying;
+			var start = block.position;
+			var end = cell.position;
+
+			foreach ( var t in Summoner.Lerp.NormalizedDuration( 0.5f ) ) {
+				block.position = Vector3.Lerp( start, end, t );
+				yield return null;
+			}
 			--isPlaying;
 		}
 	}

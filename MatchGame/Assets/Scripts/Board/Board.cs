@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Summoner.Util.Extension;
+using System.Linq;
 
 namespace Summoner.MatchGame {
 
 	public interface IBoard {
 		IList<Column> columns { get; }
+		IEnumerable<KeyValuePair<CubeCoordinate, ICell>> cells { get; }
 		ICell this[CubeCoordinate coord] { get; }
 		bool HasCell( CubeCoordinate coord );
 		void Swap( CubeCoordinate from, CubeCoordinate to );
@@ -60,6 +62,7 @@ namespace Summoner.MatchGame {
 
 		void IBoard.Drop( CubeCoordinate from, CubeCoordinate to ) {
 			Swap( cells[from], cells[to] );
+			Debug.Assert( cells[to].block != null, $"{from} -> {to}" );
 			anim.Drop( cells[to] );
 		}
 
@@ -68,6 +71,14 @@ namespace Summoner.MatchGame {
 			cells[coord].block = block;
 			anim.Drop( cells[coord] );
 			return block;
+		}
+
+		IEnumerable<KeyValuePair<CubeCoordinate, ICell>> IBoard.cells {
+			get {
+				foreach ( var cell in cells ) {
+					yield return new KeyValuePair<CubeCoordinate, ICell>( cell.Key, cell.Value );
+				}
+			}
 		}
 
 		private void Swap( Cell from, Cell to ) {
@@ -82,7 +93,7 @@ namespace Summoner.MatchGame {
 			await onAnimFinished.Task;
 		}
 
-		IEnumerator WaitAnim( TaskCompletionSource<bool> onFinished ) {
+		private IEnumerator WaitAnim( TaskCompletionSource<bool> onFinished ) {
 			yield return new WaitWhile( () => ( anim.isPlaying > 0 ) );
 			onFinished.SetResult( true );
 		}

@@ -1,19 +1,20 @@
 using UnityEngine;
 using UnityEngine.TestTools;
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Summoner.MatchGame.Test {
 	public class TestBoard : IBoard {
-		private IDictionary<CubeCoordinate, TestCell> cells = new Dictionary<CubeCoordinate, TestCell>( 8 * 8 );
+		private IDictionary<CubeCoordinate, TestCell> cells = new SortedList<CubeCoordinate, TestCell>( 8 * 8, new BoardGenerator.BottomLeftToTopRight() );
 		private IList<Column> columns = new List<Column>( 8 );
 		private IEnumerator<IDictionary<CubeCoordinate, ISymbol>> source = null;
 		public TestBoard( string fileName ) {
 			source = TestBoardParser.Parse( fileName ).GetEnumerator();
 			source.MoveNext();
 			foreach ( var symbol in source.Current ) {
-				cells.Add( symbol.Key, new TestCell() );
+				cells.Add( symbol.Key, new TestCell { coord = symbol.Key } );
 			}
 
 			var size = 8;
@@ -55,6 +56,14 @@ namespace Summoner.MatchGame.Test {
 			}
 		}
 
+		IEnumerable<KeyValuePair<CubeCoordinate, ICell>> IBoard.cells {
+			get {
+				foreach ( var cell in cells ) {
+					yield return new KeyValuePair<CubeCoordinate, ICell>( cell.Key, cell.Value );
+				}
+			}
+		}
+
 		void IBoard.Drop( CubeCoordinate from, CubeCoordinate to ) {
 			((IBoard)this).Swap( from, to );
 		}
@@ -78,7 +87,6 @@ namespace Summoner.MatchGame.Test {
 		Task IBoard.WaitAnim() {
 			return Task.FromResult( true );
 		}
-
 
 		private class TestCell : ICell {
 			public CubeCoordinate coord { get; set; }

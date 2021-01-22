@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Summoner.MatchGame {
 	public class Game : MonoBehaviour {
@@ -12,7 +13,7 @@ namespace Summoner.MatchGame {
 
 		async void Start() {
 			Debug.Assert( board != null );
-
+			await Task.Delay( 1000 );
 			var fillBoard = new FillBoard();
 			//while ( true ) {
 			//	do {
