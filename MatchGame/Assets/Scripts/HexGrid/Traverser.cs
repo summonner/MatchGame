@@ -67,5 +67,11 @@ namespace Summoner.MatchGame {
 		public static readonly CubeCoordinate NW = new CubeCoordinate( -1, 1 );
 
 		public static readonly CubeCoordinate[] around = new [] { NE, SE, S, SW, NW, N };
+
+		public static CubeCoordinate Zero {
+			get {
+				return CubeCoordinate.Zero;
+			}
+		}
 	}
 }

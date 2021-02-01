@@ -203,5 +203,7 @@ namespace Summoner.MatchGame
 		{
 			return _x ^ _z;
 		}
+
+		public static readonly CubeCoordinate Zero = new CubeCoordinate( 0, 0 );
 	}
 }

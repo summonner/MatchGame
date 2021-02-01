@@ -1,4 +1,4 @@
-using UnityEngine;
+癤퓎sing UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -38,8 +38,5 @@ namespace Summoner.MatchGame {
 
 			return new Burst( selected );
 		}
-
-		// 클릭하면 주변 블럭 제거.
-		// 블럭들이 수직으로 우선 떨어지도록 추가.
 	}
 }

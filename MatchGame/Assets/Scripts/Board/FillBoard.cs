@@ -13,19 +13,13 @@ namespace Summoner.MatchGame {
 					SpawnBlocks( board, column, numEmpties );
 				}
 			}
-
 			await board.WaitAnim();
 
-			var slipped = false;
-			do {
-				slipped = SlipBlocks( board );
-
-				if ( slipped == true ) {
-					SpawnBlocks( board );
-				}
-
+			while( FindSlipMoves( board ) ) {
+				ApplyMoves( board );
+				SpawnBlocks( board );
 				await board.WaitAnim();
-			} while ( slipped );
+			};
 		}
 
 		private int FillEmpties( IBoard board, Column column ) {
@@ -69,24 +63,56 @@ namespace Summoner.MatchGame {
 			}
 		}
 
-		private bool SlipBlocks( IBoard board ) {
-			var moved = false;
-			foreach ( var cell in board.cells ) {
-				if ( cell.Value.block != null ) {
-					continue;
-				}
-
+		private IDictionary<CubeCoordinate, CubeCoordinate> moves = new Dictionary<CubeCoordinate, CubeCoordinate>( 8 * 8 );
+		private bool FindSlipMoves( IBoard board ) {
+			moves.Clear();
+			foreach ( var cell in TraverseEmptyCells( board ) ) {
 				foreach ( var pull in pullDirections ) {
-					var up = cell.Key + pull;
-					if ( board[up]?.block != null ) {
-						board.Drop( up, cell.Key );
-						moved = true;
-						break;
+					var target = cell.Key + pull;
+					if ( board[target]?.block == null ) {
+						continue;
 					}
+
+					if ( moves.TryGetValue( target, out var move ) ) {
+						var abandon = move == FlatTopDirection.S
+								   || Random.value > 0.5f;
+						if ( abandon ) {
+							continue;
+						}
+					}
+
+					moves[target] = pull * -1;
+					break;
 				}
 			}
 
-			return moved;
+			return moves.Count > 0;
+		}
+
+		private IEnumerable<KeyValuePair<CubeCoordinate, ICell>> TraverseEmptyCells( IBoard board ) {
+			foreach ( var cell in board.cells ) {
+				var hasBlock = cell.Value.block != null
+							&& moves.ContainsKey( cell.Key ) == false;
+				if ( hasBlock ) {
+					continue;
+				}
+
+				yield return cell;
+			}
+		}
+
+		private void ApplyMoves( IBoard board ) {
+			foreach ( var cell in board.cells ) {
+				if ( cell.Value.block == null ) {
+					continue;
+				}
+
+				if ( moves.TryGetValue( cell.Key, out var move ) == false ) {
+					continue;
+				}
+
+				board.Drop( cell.Key, cell.Key + move );
+			}
 		}
 
 		private void SpawnBlocks( IBoard board ) {
