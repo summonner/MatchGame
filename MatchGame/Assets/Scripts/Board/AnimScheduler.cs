@@ -11,7 +11,7 @@ namespace Summoner.MatchGame {
 		public int isPlaying { get; private set; }
 
 		public Coroutine Drop( Cell cell ) {
-			return StartCoroutine( Lerp( cell.transform, cell.block.transform ) );
+			return StartCoroutine( FreeFall( cell.transform, cell.block.transform ) );
 		}
 		
 		IEnumerator FreeFall( Transform cell, Transform block ) {

@@ -6,14 +6,53 @@ namespace Summoner.MatchGame {
 	public class FillBoard {
 
 		public async Task Do( IBoard board ) {
-			var moved = false;
+			foreach ( var column in board.columns ) {
+				var numEmpties = FillEmpties( board, column );
+
+				if ( column.hasSpawner == true ) {
+					SpawnBlocks( board, column, numEmpties );
+				}
+			}
+
+			await board.WaitAnim();
+
+			var slipped = false;
 			do {
-				moved = false;
-				moved |= DropBlocks( board );
-				moved |= SpawnBlocks( board );
+				slipped = SlipBlocks( board );
+
+				if ( slipped == true ) {
+					SpawnBlocks( board );
+				}
 
 				await board.WaitAnim();
-			} while ( moved );
+			} while ( slipped );
+		}
+
+		private int FillEmpties( IBoard board, Column column ) {
+			var numEmpties = 0;
+			foreach ( var coord in column.BottomToTop() ) {
+				var cell = board[coord];
+				Debug.Assert( cell != null );
+				if ( cell.block == null ) {
+					numEmpties += 1;
+				}
+				else if ( numEmpties > 0 ) {
+					var dropTo = coord - column.up * numEmpties;
+					Debug.Assert( board[dropTo] != null && board[dropTo].block == null, dropTo.ToString() );
+					board.Drop( coord, dropTo );
+				}
+			}
+
+			return numEmpties;
+		}
+
+		private void SpawnBlocks( IBoard board, Column column, int numEmpties ) {
+			var coord = column.top + column.up;
+			var offset = column.up * numEmpties;
+			for ( var i = 0; i < numEmpties; ++i ) {
+				var block = board.Spawn( coord - offset, offset );
+				coord += column.up;
+			}
 		}
 
 		private IEnumerable<CubeCoordinate> pullDirections {
@@ -30,7 +69,7 @@ namespace Summoner.MatchGame {
 			}
 		}
 
-		private bool DropBlocks( IBoard board ) {
+		private bool SlipBlocks( IBoard board ) {
 			var moved = false;
 			foreach ( var cell in board.cells ) {
 				if ( cell.Value.block != null ) {
@@ -50,18 +89,14 @@ namespace Summoner.MatchGame {
 			return moved;
 		}
 
-		private bool SpawnBlocks( IBoard board ) {
-			var moved = false;
+		private void SpawnBlocks( IBoard board ) {
 			foreach ( var column in board.columns ) {
 				var needSpawn = board[column.top].block == null
 							 && column.hasSpawner == true;
 				if ( needSpawn ) {
 					board.Spawn( column.top, FlatTopDirection.N );
-					moved = true;
 				}
 			}
-
-			return moved;
 		}
 	}
 }
