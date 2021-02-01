@@ -76,7 +76,7 @@ namespace Summoner.Util.ScriptTemplates {
 				}
 
 				set {
-					System.IO.File.WriteAllText( path, value );
+					System.IO.File.WriteAllText( path, value, System.Text.Encoding.UTF8 );
 				}
 			}
 
