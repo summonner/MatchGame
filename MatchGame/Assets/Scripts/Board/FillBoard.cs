@@ -52,7 +52,7 @@ namespace Summoner.MatchGame {
 		private IEnumerable<CubeCoordinate> pullDirections {
 			get {
 				yield return FlatTopDirection.N;
-				if ( Random.value > 0.5f ) {
+				if ( UnityEngine.Random.value > 0.5f ) {
 					yield return FlatTopDirection.NE;
 					yield return FlatTopDirection.NW;
 				}
@@ -75,7 +75,7 @@ namespace Summoner.MatchGame {
 
 					if ( moves.TryGetValue( target, out var move ) ) {
 						var abandon = move == FlatTopDirection.S
-								   || Random.value > 0.5f;
+								   || UnityEngine.Random.value > 0.5f;
 						if ( abandon ) {
 							continue;
 						}

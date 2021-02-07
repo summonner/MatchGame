@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Summoner.Util.Random {
+namespace Summoner.Random {
 	
 	public static class FisherYatesShuffle {
 		public delegate int RandomFunc( int min, int max );
