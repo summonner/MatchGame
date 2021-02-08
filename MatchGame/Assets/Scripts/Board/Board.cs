@@ -8,7 +8,6 @@ using System.Linq;
 namespace Summoner.MatchGame {
 
 	public interface IBoard {
-		IList<Column> columns { get; }
 		IEnumerable<KeyValuePair<CubeCoordinate, ICell>> cells { get; }
 		ICell this[CubeCoordinate coord] { get; }
 		bool HasCell( CubeCoordinate coord );
@@ -27,12 +26,10 @@ namespace Summoner.MatchGame {
 		private CoordConverter converter;
 		private GameObject template;
 		private AnimScheduler anim;
-		public IList<Column> columns { get; private set; }
 
-		public void Init( IDictionary<CubeCoordinate, Cell> cells, CoordConverter converter, IList<Column> columns ) {
+		public void Init( IDictionary<CubeCoordinate, Cell> cells, CoordConverter converter ) {
 			this.cells = cells;
 			this.converter = converter;
-			this.columns = columns;
 			template = Resources.Load<GameObject>( "Block/Block" );
 			anim = gameObject.GetOrAddComponent<AnimScheduler>();
 		}

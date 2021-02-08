@@ -25,10 +25,8 @@ namespace Summoner.MatchGame {
 			var inputReceiver = AddInputReceiver( container, bounds );
 			inputReceiver.converter = converter;
 
-			var columns = new List<Column>( BuildColumns() );
-
 			var board = gameObject.GetOrAddComponent<Board>();
-			board.Init( cells, converter, columns );
+			board.Init( cells, converter );
 
 			Destroy( this );
 			game.Init( board, inputReceiver );
@@ -49,7 +47,7 @@ namespace Summoner.MatchGame {
 			foreach ( var coord in TraversePoints() ) {
 				var cellObj = Instantiate( template, container );
 				var cell = cellObj.GetOrAddComponent<Cell>();
-				cell.Init( coord, converter.Hex2Board( coord ) );
+				cell.Init( coord, converter.Hex2Board( coord ), IsSpawner( coord ) );
 				cells.Add( coord, cell );
 			}
 
@@ -63,6 +61,11 @@ namespace Summoner.MatchGame {
 					yield return new CubeCoordinate( x, y );
 				}
 			}
+		}
+
+		private bool IsSpawner( CubeCoordinate coord ) {
+			if ( coord.q / 2 != 1 ) return false;
+			return coord.r == size - (coord.q / 2) - 1;
 		}
 
 		private InputReceiver AddInputReceiver( Transform pivot, Bounds bounds ) {
@@ -85,15 +88,6 @@ namespace Summoner.MatchGame {
 
 			bounds.Expand( cellRadius );
 			return bounds;
-		}
-
-		private IEnumerable<Column> BuildColumns() {
-			for ( var x = 0; x < size; ++x ) {
-				var offset = x / 2;
-				var bottom = new CubeCoordinate( x, -offset );
-				var spawner = new CubeCoordinate( x, size - 1 - offset );
-				yield return new Column( bottom, FlatTopDirection.N, spawner, x /2 == 1 );
-			}
 		}
 
 		public class BottomLeftToTopRight : IComparer<CubeCoordinate> {

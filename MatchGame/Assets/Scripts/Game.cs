@@ -16,10 +16,10 @@ namespace Summoner.MatchGame {
 		async void Start() {
 			Debug.Assert( board != null );
 			await Task.Delay( 1000 );
-			var fillBoard = new FillBoard();
+			var fillBoard = new FillBoard( board );
 
 			while ( true ) {
-				await fillBoard.Do( board );
+				await fillBoard.Do();
 
 				var input = await WaitInput();
 

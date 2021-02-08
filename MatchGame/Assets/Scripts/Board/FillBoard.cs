@@ -1,12 +1,20 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Summoner.MatchGame {
 	public class FillBoard {
+		private readonly IBoard board;
+		private readonly IList<Column> columns;
 
-		public async Task Do( IBoard board ) {
-			foreach ( var column in board.columns ) {
+		public FillBoard( IBoard board ) {
+			this.board = board;
+			this.columns = ColumnBuilder.Build( board ).ToArray();
+		}
+
+		public async Task Do() {
+			foreach ( var column in columns ) {
 				var numEmpties = FillEmpties( board, column );
 
 				if ( column.hasSpawner == true ) {
@@ -116,7 +124,7 @@ namespace Summoner.MatchGame {
 		}
 
 		private void SpawnBlocks( IBoard board ) {
-			foreach ( var column in board.columns ) {
+			foreach ( var column in columns ) {
 				var needSpawn = board[column.top].block == null
 							 && column.hasSpawner == true;
 				if ( needSpawn ) {

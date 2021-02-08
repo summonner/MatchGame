@@ -12,8 +12,8 @@ namespace Summoner.MatchGame.Test {
 		[TestCase( "CenterFill" )]
 		public void Test( string testCase ) {
 			TestBoard board = new TestBoard( testCase );
-			FillBoard fillBoard = new FillBoard();
-			var task = fillBoard.Do( board );
+			FillBoard fillBoard = new FillBoard( board );
+			var task = fillBoard.Do();
 			while ( task.IsCompleted == false ) { }
 			if ( task.Exception != null ) {
 				throw task.Exception;

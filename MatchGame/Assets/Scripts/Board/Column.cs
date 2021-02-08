@@ -9,9 +9,9 @@ namespace Summoner.MatchGame {
 		public readonly CubeCoordinate top;
 		public readonly bool hasSpawner;
 
-		public Column( CubeCoordinate bottom, CubeCoordinate up, CubeCoordinate top, bool hasSpawner ) {
+		public Column( CubeCoordinate bottom, CubeCoordinate top, bool hasSpawner ) {
 			this.bottom = bottom;
-			this.up = up;
+			this.up = FlatTopDirection.N;
 			this.top = top;
 			this.hasSpawner = hasSpawner;
 		}
