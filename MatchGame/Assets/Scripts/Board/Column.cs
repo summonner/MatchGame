@@ -10,6 +10,7 @@ namespace Summoner.MatchGame {
 		public readonly bool hasSpawner;
 
 		public Column( CubeCoordinate bottom, CubeCoordinate top, bool hasSpawner ) {
+			Debug.Assert( bottom.q == top.q && bottom.r < top.r );
 			this.bottom = bottom;
 			this.up = FlatTopDirection.N;
 			this.top = top;
@@ -17,17 +18,21 @@ namespace Summoner.MatchGame {
 		}
 
 		public IEnumerable<CubeCoordinate> BottomToTop() {
-			for ( var coord = bottom; coord != top; coord += up ) {
+			for ( var coord = bottom; Less( coord, top ); coord += up ) {
 				yield return coord;
 			}
 			yield return top;
 		}
 
 		public IEnumerable<CubeCoordinate> TopToBottom() {
-			for ( var coord = top; coord != bottom; coord -= up ) {
+			for ( var coord = top; Less( bottom, coord ); coord -= up ) {
 				yield return coord;
 			}
 			yield return bottom;
+		}
+
+		private static bool Less( CubeCoordinate a, CubeCoordinate b ) {
+			return a.r < b.r;
 		}
 	}
 }

@@ -26,5 +26,20 @@ namespace Summoner.MatchGame {
 				return block;
 			}
 		}
+
+#if UNITY_EDITOR
+		void OnDrawGizmos() {
+			if ( isSpawner == false ) {
+				return;
+			}
+
+			var l = 0.3f;
+			var p = transform.position + new Vector3( 0, -l, 0 );
+			UnityEditor.Handles.color = Color.green;
+			UnityEditor.Handles.DrawLine( p, p + new Vector3( 0, 2 * l, 0 ) );
+			UnityEditor.Handles.DrawLine( p, p + new Vector3( l, l, 0 ) );
+			UnityEditor.Handles.DrawLine( p, p + new Vector3( -l, l, 0 ) );
+		}
 	}
+#endif
 }

@@ -34,8 +34,11 @@ namespace Summoner.MatchGame {
 			var numEmpties = 0;
 			foreach ( var coord in column.BottomToTop() ) {
 				var cell = board[coord];
-				Debug.Assert( cell != null );
-				if ( cell.block == null ) {
+				//Debug.Assert( cell != null );
+				if ( cell == null ) {
+					numEmpties = 0;
+				}
+				else if ( cell.block == null ) {
 					numEmpties += 1;
 				}
 				else if ( numEmpties > 0 ) {

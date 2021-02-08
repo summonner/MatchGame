@@ -51,6 +51,9 @@ namespace Summoner.MatchGame {
 				cells.Add( coord, cell );
 			}
 
+			var test = new CubeCoordinate( 2, 3 );
+			Destroy( cells[test].gameObject );
+			cells.Remove( test );
 			return cells;
 		}
 
@@ -64,8 +67,12 @@ namespace Summoner.MatchGame {
 		}
 
 		private bool IsSpawner( CubeCoordinate coord ) {
-			if ( coord.q / 2 != 1 ) return false;
-			return coord.r == size - (coord.q / 2) - 1;
+			var list = new List<CubeCoordinate>( new[] {
+				new CubeCoordinate( 2, 2 ),
+				new CubeCoordinate( 2, 6 ),
+				new CubeCoordinate( 3, 6 ),
+			} );
+			return list.Contains( coord );
 		}
 
 		private InputReceiver AddInputReceiver( Transform pivot, Bounds bounds ) {
