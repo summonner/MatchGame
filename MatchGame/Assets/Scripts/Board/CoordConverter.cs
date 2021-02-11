@@ -2,14 +2,10 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace Summoner.MatchGame {
-	public class CoordConverter : MonoBehaviour {
+	public sealed class CoordConverter : MonoBehaviour {
 		public Vector2 spacing { get; private set; }
-		public float cellRadius { get; private set; }
-		public float gap { get; private set; }
 
 		public void Init( float cellRadius, float gap ){
-			this.cellRadius = cellRadius;
-			this.gap = gap;
 			spacing = new Vector2(
 				cellRadius * 1.5f + gap,
 				cellRadius * Mathf.Sqrt( 3 ) + gap

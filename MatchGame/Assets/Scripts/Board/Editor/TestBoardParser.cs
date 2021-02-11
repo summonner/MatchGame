@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace Summoner.MatchGame.Test {
-	public class TestBoardParser {
+	public sealed class TestBoardParser {
 		public static IEnumerable<IDictionary<CubeCoordinate, ISymbol>> Parse( string filename ) {
 			var symbols = new Dictionary<CubeCoordinate, ISymbol>( 8 * 8 );
 			foreach ( var layout in ReadLayouts( filename ) ) {

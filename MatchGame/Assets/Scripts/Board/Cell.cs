@@ -8,7 +8,8 @@ namespace Summoner.MatchGame {
 		bool isSpawner { get; }
 	}
 
-	public class Cell : MonoBehaviour, ICell {
+	[SelectionBase]
+	public sealed class Cell : MonoBehaviour, ICell {
 
 		public CubeCoordinate coord { get; private set; }
 		public Block block;
