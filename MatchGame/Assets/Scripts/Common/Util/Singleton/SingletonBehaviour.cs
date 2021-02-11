@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using Summoner.Util.Extension;
 
 namespace Summoner.Util.Singleton {
 	public abstract class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<T> {

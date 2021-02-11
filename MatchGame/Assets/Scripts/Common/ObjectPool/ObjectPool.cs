@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Summoner.Util.Extension;
 using Summoner.ObjectPool;
 
 namespace Summoner {

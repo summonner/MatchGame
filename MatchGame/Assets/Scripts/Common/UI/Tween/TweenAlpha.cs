@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using Summoner.Util.Extension;
 
 namespace Summoner.UI.Tween {
 	[RequireComponent( typeof(RectTransform) )]

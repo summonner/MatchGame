@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Summoner.Util.Extension;
 
 namespace Summoner.MatchGame {
 	public class BoardGenerator : MonoBehaviour {

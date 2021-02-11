@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using System.Collections.Generic;
-using Summoner.Util.Extension;
 
 namespace Summoner.UI {
 	public class BaseToText : MonoBehaviour {

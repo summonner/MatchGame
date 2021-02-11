@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using Summoner.Util.Extension;
 using Summoner.EditorExtensions;
 using UnityPrefs = UnityEngine.PlayerPrefs;
 using Type = Summoner.Util.PlayerPrefs.PlayerPrefsEditor.Type;

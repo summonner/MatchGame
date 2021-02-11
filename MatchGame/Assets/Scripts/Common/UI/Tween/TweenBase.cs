@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Summoner.Util.Extension;
 
 namespace Summoner.UI.Tween {
 	public abstract class TweenBase : MonoBehaviour {

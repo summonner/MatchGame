@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Summoner.Util.Extension;
 using System.Linq;
 
 namespace Summoner.MatchGame {

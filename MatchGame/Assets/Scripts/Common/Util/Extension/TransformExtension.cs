@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Summoner.Util.Extension {
+namespace Summoner {
 	public static class TransformExtension {
 
 		public static void Reset( this Transform transform ) {

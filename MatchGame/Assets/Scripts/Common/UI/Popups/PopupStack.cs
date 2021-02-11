@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Summoner.Util.Singleton;
-using Summoner.Util.Extension;
 
 namespace Summoner.UI.Popups {
 	public class PopupStack : SingletonBehaviour<PopupStack> {
