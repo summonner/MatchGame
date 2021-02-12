@@ -3,12 +3,12 @@ using UnityEditor;
 using System.Collections.Generic;
 
 namespace Summoner.MatchGame {
-	[CustomEditor( typeof(BoardEditor) )]
+	[CustomEditor( typeof(BoardLayout) )]
 	public sealed class BoardEditorInspector : Editor {
 		private BoardEditMode editMode;
 		private void OnEnable() {
-			var editor = target as BoardEditor;
-			editMode = new BoardEditMode( editor.transform );
+			var layout = target as BoardLayout;
+			editMode = new BoardEditMode( layout );
 		}
 
 		private void OnDisable() {

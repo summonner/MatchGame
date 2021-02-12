@@ -10,7 +10,7 @@ namespace Summoner.MatchGame {
 		public readonly bool hasSpawner;
 
 		public Column( CubeCoordinate bottom, CubeCoordinate top, bool hasSpawner ) {
-			Debug.Assert( bottom.q == top.q && bottom.r < top.r );
+			Debug.Assert( bottom.q == top.q && bottom.r <= top.r );
 			this.bottom = bottom;
 			this.up = FlatTopDirection.N;
 			this.top = top;

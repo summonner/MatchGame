@@ -19,7 +19,8 @@ namespace Summoner.MatchGame {
 		Task WaitAnim();
 	}
 
-	public class Board : MonoBehaviour, IBoard {
+	[SelectionBase]
+	public sealed class Board : MonoBehaviour, IBoard {
 
 		private IDictionary<CubeCoordinate, Cell> cells = null;
 		private CoordConverter converter;

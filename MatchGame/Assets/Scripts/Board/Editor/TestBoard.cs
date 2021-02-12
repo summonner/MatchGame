@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Summoner.MatchGame.Test {
-	public class TestBoard : IBoard {
-		private IDictionary<CubeCoordinate, TestCell> cells = new SortedList<CubeCoordinate, TestCell>( 8 * 8, new BoardGenerator.BottomLeftToTopRight() );
+	public sealed class TestBoard : IBoard {
+		private IDictionary<CubeCoordinate, TestCell> cells = new SortedList<CubeCoordinate, TestCell>( 8 * 8, BottomLeftToTopRight.Instance );
 		private IEnumerator<IDictionary<CubeCoordinate, ISymbol>> source = null;
 		public TestBoard( string fileName ) {
 			source = TestBoardParser.Parse( fileName ).GetEnumerator();

@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Summoner.MatchGame {
-	public class Game : MonoBehaviour {
+	public sealed class Game : MonoBehaviour {
 		private Board board;
 		private InputReceiver receiver;
-
-		public void Init( Board board, InputReceiver receiver ) {
-			this.board = board;
-			this.receiver = receiver;
-		}
+		[SerializeField] private BoardLayout layout;
 
 		async void Start() {
-			Debug.Assert( board != null );
+			board = layout.Generate();
+			if ( board == null ) {
+				throw new System.ArgumentException( "board is null" );
+			}
+
+			receiver = board.GetComponentInChildren<InputReceiver>();
+
 			await Task.Delay( 1000 );
 			var fillBoard = new FillBoard( board );
 

@@ -5,48 +5,24 @@ using System.Collections.Generic;
 namespace Summoner.MatchGame {
 	public sealed class BoardEditMode {
 		private static readonly GameObject template = Resources.Load<GameObject>( "Board/Tile" );
+		private static readonly int boardLayer = LayerMask.NameToLayer( "Board" );
 
-		private readonly Transform transform = null;
-		private readonly IDictionary<CubeCoordinate, Transform> tiles = new Dictionary<CubeCoordinate, Transform>();
+		private readonly BoardLayout target = null;
 		private System.Action<CubeCoordinate> action = null;
+		private IDictionary<CubeCoordinate, Cell> tiles = null;
 
+		private CoordConverter converter => target.converter;
 		public int tileCount => tiles.Count;
 
-		public BoardEditMode( Transform target ) {
-			transform = target;
+		public BoardEditMode( BoardLayout target ) {
+			this.target = target;
+			target.gameObject.layer = boardLayer;
+
 			ReloadTiles();
 		}
 
 		private void ReloadTiles() {
-			tiles.Clear();
-			var toRemove = new List<Transform>();
-			foreach ( Transform child in transform ) {
-				var coord = converter.World2Hex( child.position );
-				var isValid = tiles.ContainsKey( coord ) == false
-						   && child.GetComponent<Cell>() != null;
-				if ( isValid ) {
-					tiles.Add( coord, child );
-				}
-				else {
-					toRemove.Add( child );
-				}
-			}
-
-			foreach ( var t in toRemove ) {
-				Object.DestroyImmediate( t.gameObject );
-			}
-		}
-
-		private CoordConverter _converter;
-		private CoordConverter converter {
-			get {
-				if ( _converter == null ) {
-					_converter = transform.GetOrAddComponent<CoordConverter>();
-					_converter.Init( 0.5f, 0.02f );
-				}
-
-				return _converter;
-			}
+			target.ReloadTiles( ref tiles );
 		}
 
 		private Tool lastTool;
@@ -75,7 +51,7 @@ namespace Summoner.MatchGame {
 
 		private CubeCoordinate GetMousePosition() {
 			var ray = HandleUtility.GUIPointToWorldRay( Event.current.mousePosition );
-			var plane = new Plane( Vector3.forward, transform.position.z );
+			var plane = new Plane( Vector3.forward, target.transform.position.z );
 			if ( plane.Raycast( ray, out float enter ) ) {
 				var p = ray.GetPoint( enter );
 				return converter.World2Hex( p );
@@ -136,10 +112,11 @@ namespace Summoner.MatchGame {
 			var instance = Object.Instantiate( template );
 			var tile = instance.transform;
 
-			tile.Reset( transform );
+			tile.Reset( target.transform );
 			tile.position = converter.Hex2World( coord );
 			tile.name = coord.ToString();
-			tiles.Add( coord, tile );
+			tile.gameObject.layer = boardLayer;
+			tiles.Add( coord, tile.GetComponent<Cell>() );
 
 			Undo.RegisterCreatedObjectUndo( instance, "Edit Board" );
 		}

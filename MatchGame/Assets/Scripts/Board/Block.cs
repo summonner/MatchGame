@@ -7,7 +7,8 @@ namespace Summoner.MatchGame {
 		byte color { get; }
 	}
 
-	public class Block : MonoBehaviour, IBlock {
+	[SelectionBase]
+	public sealed class Block : MonoBehaviour, IBlock {
 
 		public byte color { get; private set; }
 	}
