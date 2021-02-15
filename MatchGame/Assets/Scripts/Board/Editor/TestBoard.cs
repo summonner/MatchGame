@@ -56,10 +56,11 @@ namespace Summoner.MatchGame.Test {
 			return cells.ContainsKey( coord );
 		}
 
-		IBlock IBoard.Spawn( CubeCoordinate coord, CubeCoordinate offset ) {
-			var block = new TestBlock();
-			cells[coord].block = block;
-			return block;
+		void IBoard.Spawn( CubeCoordinate coord, int count ) {
+			for ( int i = 0; i < count; ++i ) {
+				var p = coord + i * FlatTopDirection.S;
+				cells[p].block = new TestBlock();
+			}
 		}
 
 		void IBoard.Swap( CubeCoordinate from, CubeCoordinate to ) {
@@ -102,9 +103,10 @@ namespace Summoner.MatchGame.Test {
 
 		private class TestBlock : IBlock {
 			public byte color { get; set; }
+			public byte type { get; set; }
 
 			public override string ToString() {
-				return color.ToString();
+				return $"{color}, {type}";
 			}
 		}
 	}

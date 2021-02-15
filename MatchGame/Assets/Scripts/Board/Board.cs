@@ -12,7 +12,7 @@ namespace Summoner.MatchGame {
 		bool HasCell( CubeCoordinate coord );
 		void Swap( CubeCoordinate from, CubeCoordinate to );
 		void Drop( CubeCoordinate from, CubeCoordinate to );
-		IBlock Spawn( CubeCoordinate coord, CubeCoordinate offset );
+		void Spawn( CubeCoordinate coord, int count );
 		void Destroy( IEnumerable<CubeCoordinate> coords );
 		void Destroy( CubeCoordinate coord );
 
@@ -23,21 +23,15 @@ namespace Summoner.MatchGame {
 	public sealed class Board : MonoBehaviour, IBoard {
 
 		private IDictionary<CubeCoordinate, Cell> cells = null;
-		private CoordConverter converter;
-		private GameObject template;
-		private AnimScheduler anim;
+		private CoordConverter converter = null;
+		private Block template = null;
+		private AnimScheduler anim = null;
 
 		public void Init( IDictionary<CubeCoordinate, Cell> cells, CoordConverter converter ) {
 			this.cells = cells;
 			this.converter = converter;
-			template = Resources.Load<GameObject>( "Block/Block" );
+			template = Resources.Load<Block>( "Block/Block" );
 			anim = gameObject.GetOrAddComponent<AnimScheduler>();
-		}
-
-		private Block SpawnBlock( CubeCoordinate coord ) {
-			var block = Instantiate( template );
-			block.transform.position = converter.Hex2World( coord );
-			return block.GetComponent<Block>();
 		}
 
 		ICell IBoard.this[CubeCoordinate coord] {
@@ -65,10 +59,26 @@ namespace Summoner.MatchGame {
 			anim.Drop( cells[to] );
 		}
 
-		IBlock IBoard.Spawn( CubeCoordinate coord, CubeCoordinate offset ) {
-			var block = SpawnBlock( coord + offset );
-			cells[coord].block = block;
-			anim.Drop( cells[coord] );
+		void IBoard.Spawn( CubeCoordinate coord, int count ) {
+			Debug.Assert( count > 0 );
+
+			var spawner = cells[coord].spawner;
+			Debug.Assert( spawner != null, $"Tried to spawn a block from non-spawner cell, {coord}" );
+
+			var offset = FlatTopDirection.N * count;
+			var p = coord;
+			for ( var i = 0; i < count; ++i ) {
+				var cell = cells[p];
+				cell.block = SpawnBlock( spawner.Draw(), p + offset );
+				anim.Drop( cell );
+				p -= FlatTopDirection.N;
+			}
+		}
+
+		private Block SpawnBlock( IBlock archetype, CubeCoordinate coord ) {
+			var block = Instantiate( template );
+			block.Init( archetype );
+			block.transform.position = converter.Hex2World( coord );
 			return block;
 		}
 

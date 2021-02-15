@@ -308,6 +308,7 @@ GameObject:
   - component: {fileID: 1558165314264269320}
   - component: {fileID: 1558165314264269321}
   - component: {fileID: 1558165314264269326}
+  - component: {fileID: 7273040094769101845}
   m_Layer: 6
   m_Name: EditorTest
   m_TagString: Untagged
@@ -379,6 +380,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf9e47e33931ed4687e20fc95cac22b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7273040094769101845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1558165314264269327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88bb72052539c5442ac55b9077e722f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colors:
+  - value: 0
+    probability: 1
+  - value: 1
+    probability: 1
+  - value: 2
+    probability: 1
+  - value: 3
+    probability: 1
+  - value: 4
+    probability: 1
+  - value: 5
+    probability: 1
+  types:
+  - value: 0
+    probability: 1
+  targets:
+  - {fileID: 1558165315928618657}
 --- !u!1 &1558165314283762980
 GameObject:
   m_ObjectHideFlags: 0
@@ -2828,7 +2859,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1558165315928618662}
   - component: {fileID: 1558165315928618657}
-  - component: {fileID: 3325361027517542170}
   m_Layer: 6
   m_Name: (4, 3)
   m_TagString: Untagged
@@ -2864,19 +2894,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   block: {fileID: 0}
---- !u!114 &3325361027517542170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1558165315928618663}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 473106d817ba9284b8948b6e656e803c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  color: []
 --- !u!1 &1558165315959235923
 GameObject:
   m_ObjectHideFlags: 0

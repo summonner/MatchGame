@@ -52,12 +52,7 @@ namespace Summoner.MatchGame {
 		}
 
 		private void SpawnBlocks( IBoard board, Column column, int numEmpties ) {
-			var coord = column.top + column.up;
-			var offset = column.up * numEmpties;
-			for ( var i = 0; i < numEmpties; ++i ) {
-				var block = board.Spawn( coord - offset, offset );
-				coord += column.up;
-			}
+			board.Spawn( column.top, numEmpties );
 		}
 
 		private IEnumerable<CubeCoordinate> pullDirections {
@@ -131,7 +126,7 @@ namespace Summoner.MatchGame {
 				var needSpawn = board[column.top].block == null
 							 && column.hasSpawner == true;
 				if ( needSpawn ) {
-					board.Spawn( column.top, FlatTopDirection.N );
+					board.Spawn( column.top, 1 );
 				}
 			}
 		}
