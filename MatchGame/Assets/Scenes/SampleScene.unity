@@ -412,6 +412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layout: {fileID: 1558165314264269321, guid: a87e8134edca92a44a1d425188b68f97, type: 3}
+  burst: 1
 --- !u!4 &1133919421
 Transform:
   m_ObjectHideFlags: 0

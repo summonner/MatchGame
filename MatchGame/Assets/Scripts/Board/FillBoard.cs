@@ -5,54 +5,53 @@ using System.Linq;
 
 namespace Summoner.MatchGame {
 	public class FillBoard {
-		private readonly IBoard board;
-		private readonly IList<Column> columns;
+		private readonly IBoard board = null;
+		private readonly IList<CubeCoordinate> spawners = null;
+		private IDictionary<CubeCoordinate, CubeCoordinate> moves = null;
+
 
 		public FillBoard( IBoard board ) {
 			this.board = board;
-			this.columns = ColumnBuilder.Build( board ).ToArray();
+			spawners = (from cell in board.cells
+					   where cell.Value.isSpawner
+					   select cell.Key)
+					   .ToArray();
+			moves = new Dictionary<CubeCoordinate, CubeCoordinate>( board.cells.Count() );
 		}
 
 		public async Task Do() {
-			foreach ( var column in columns ) {
-				var numEmpties = FillEmpties( board, column );
-
-				if ( column.hasSpawner == true ) {
-					SpawnBlocks( board, column, numEmpties );
-				}
-			}
+			SpawnBlocks( board );	// TODO : 초기배치를 먼저하도록하고 제거.
+			FindStraightMoves();
 			await board.WaitAnim();
 
-			while( FindSlipMoves( board ) ) {
+			while ( FindSlipMoves( board ) ) {
 				ApplyMoves( board );
 				SpawnBlocks( board );
 				await board.WaitAnim();
 			};
+
+			Debug.Assert( moves.Count <= 0 );
+			moves.Clear();
 		}
 
-		private int FillEmpties( IBoard board, Column column ) {
-			var numEmpties = 0;
-			foreach ( var coord in column.BottomToTop() ) {
-				var cell = board[coord];
-				//Debug.Assert( cell != null );
-				if ( cell == null ) {
-					numEmpties = 0;
+		private void FindStraightMoves() {
+			foreach ( var cell in board.cells ) {
+				if ( cell.Value.block == null ) {
+					continue;
 				}
-				else if ( cell.block == null ) {
-					numEmpties += 1;
-				}
-				else if ( numEmpties > 0 ) {
-					var dropTo = coord - column.up * numEmpties;
-					Debug.Assert( board[dropTo] != null && board[dropTo].block == null, dropTo.ToString() );
-					board.Drop( coord, dropTo );
+
+				var coord = cell.Key;
+				while ( IsEmpty( coord + FlatTopDirection.S ) ) {
+					moves[coord] = FlatTopDirection.S;
+					coord += FlatTopDirection.S;
 				}
 			}
-
-			return numEmpties;
 		}
 
-		private void SpawnBlocks( IBoard board, Column column, int numEmpties ) {
-			board.Spawn( column.top, numEmpties );
+		private bool IsEmpty( CubeCoordinate coord ) {
+			var cell = board[coord];
+			return cell != null
+				&& cell.block == null;
 		}
 
 		private IEnumerable<CubeCoordinate> pullDirections {
@@ -69,10 +68,12 @@ namespace Summoner.MatchGame {
 			}
 		}
 
-		private IDictionary<CubeCoordinate, CubeCoordinate> moves = new Dictionary<CubeCoordinate, CubeCoordinate>( 8 * 8 );
 		private bool FindSlipMoves( IBoard board ) {
-			moves.Clear();
 			foreach ( var cell in TraverseEmptyCells( board ) ) {
+				if ( moves.ContainsKey( cell.Key + FlatTopDirection.N ) ) {
+					continue;
+				}
+
 				foreach ( var pull in pullDirections ) {
 					var target = cell.Key + pull;
 					if ( board[target]?.block == null ) {
@@ -99,7 +100,7 @@ namespace Summoner.MatchGame {
 			foreach ( var cell in board.cells ) {
 				var hasBlock = cell.Value.block != null
 							&& moves.ContainsKey( cell.Key ) == false;
-				if ( hasBlock ) {
+				if ( hasBlock || cell.Value.isSpawner ) {
 					continue;
 				}
 
@@ -118,15 +119,14 @@ namespace Summoner.MatchGame {
 				}
 
 				board.Drop( cell.Key, cell.Key + move );
+				moves.Remove( cell.Key );
 			}
 		}
 
 		private void SpawnBlocks( IBoard board ) {
-			foreach ( var column in columns ) {
-				var needSpawn = board[column.top].block == null
-							 && column.hasSpawner == true;
-				if ( needSpawn ) {
-					board.Spawn( column.top, 1 );
+			foreach ( var spawner in spawners ) {
+				if ( board[spawner].block == null ) {
+					board.Spawn( spawner, 1 );
 				}
 			}
 		}

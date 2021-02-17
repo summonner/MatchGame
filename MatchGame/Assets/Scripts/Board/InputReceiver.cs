@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
 namespace Summoner.MatchGame {
-	public sealed class InputReceiver : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler {
+	public sealed class InputReceiver : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler {
 		private CoordConverter converter;
 
 		public delegate void OnDragDelegate( CubeCoordinate selected, CubeCoordinate direction );
@@ -29,7 +29,7 @@ namespace Summoner.MatchGame {
 			// to receive begin drag event
 		}
 
-		public void OnPointerDown( PointerEventData eventData ) {
+		public void OnPointerClick( PointerEventData eventData ) {
 			var selected = converter.World2Hex( eventData.pointerCurrentRaycast.worldPosition );
 			Debug.Log( selected );
 			onClick( selected );

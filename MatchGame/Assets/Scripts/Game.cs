@@ -32,13 +32,28 @@ namespace Summoner.MatchGame {
 			}
 		}
 
+		public bool burst = true;
 		private async Task<ICommand> WaitInput() {
-			var wait = new TaskCompletionSource<CubeCoordinate>();
-			receiver.onClick += wait.SetResult;
-			var selected = await wait.Task;
-			receiver.onClick -= wait.SetResult;
+			if ( burst ) {
+				var wait = new TaskCompletionSource<CubeCoordinate>();
+				receiver.onClick += wait.SetResult;
+				var selected = await wait.Task;
+				receiver.onClick -= wait.SetResult;
 
-			return new Burst( selected );
+				return new Burst( selected );
+			}
+			else {
+				var wait = new TaskCompletionSource<KeyValuePair<CubeCoordinate, CubeCoordinate>>();
+				InputReceiver.OnDragDelegate onReceive = ( selected, direction ) => {
+					wait.SetResult( new KeyValuePair<CubeCoordinate, CubeCoordinate>( selected, direction ) );
+				};
+
+				receiver.onDrag += onReceive;
+				var received = await wait.Task;
+				receiver.onDrag -= onReceive;
+
+				return new Line( received.Key, received.Value );
+			}
 		}
 	}
 }
