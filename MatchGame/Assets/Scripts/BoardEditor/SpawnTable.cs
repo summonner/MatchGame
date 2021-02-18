@@ -18,10 +18,10 @@ namespace Summoner.MatchGame {
 		void Awake() {
 			var colorDrawer = new Drawer( colors );
 			var typeDrawer = new Drawer( types );
-			var spawner = new Spawner( colorDrawer, typeDrawer );
 
 			foreach ( var target in targets ) {
-				target.spawner = spawner;
+				var spawner = target.gameObject.AddComponent<Spawner>();
+				spawner.Init( colorDrawer, typeDrawer );
 			}
 		}
 

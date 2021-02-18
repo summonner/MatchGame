@@ -69,6 +69,10 @@ namespace Summoner.MatchGame.Test {
 			cells[to].block = temp;
 		}
 
+		void IBoard.MoveTimeline() { 
+			// do nothing
+		}
+
 		Task IBoard.WaitAnim() {
 			return Task.FromResult( true );
 		}

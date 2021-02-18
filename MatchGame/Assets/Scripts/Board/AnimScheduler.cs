@@ -1,59 +1,59 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Summoner.MatchGame {
+	public interface IAnim {
+		Coroutine Play( System.Action onFinished );
+	}
+
 	public class AnimScheduler : MonoBehaviour {
-		[SerializeField] private float gravity = -40.0f;
-		[SerializeField] private float bounce = 0.2f;
-		[SerializeField] private float threshold = -10f;
-
+		private static readonly YieldInstruction waitTick = new WaitForSeconds( 0.15f );
 		public int isPlaying { get; private set; }
+		private IList<IList<IAnim>> timeline = null;
 
-		public Coroutine Drop( Cell cell ) {
-			return StartCoroutine( Lerp( cell.transform, cell.block.transform ) );
-		}
-		
-		IEnumerator FreeFall( Transform cell, Transform block ) {
-			var start = block.position;
-			var end = cell.position;
-		//	Debug.DrawLine( start, end, Color.white, 1 );
-			var v = 0.0f;
-			++isPlaying;
-			do {
-				while ( block.position.y > end.y ) {
-					v += gravity * Time.deltaTime;
-					var p = block.position;
-					p.y += v * Time.deltaTime;
-					var t = (p.y - end.y) / (start.y - end.y);
-					p.x = Mathf.Lerp( end.x, start.x, t );
-					block.position = p;
-					yield return null;
-				}
-
-				if ( v < threshold ) {
-					v = -v * bounce;
-					block.position += 2 * (end - block.position);
-				}
-				else {
-					break;
-				}
-			} while ( true );
-
-			block.position = end;
-			--isPlaying;
+		private void Awake() {
+			timeline = new List<IList<IAnim>>();
+			MoveTimeline();
 		}
 
-		private IEnumerator Lerp( Transform cell, Transform block ) {
-			++isPlaying;
-			var start = block.position;
-			var end = cell.position;
+		public void MoveTimeline() {
+			timeline.Add( new List<IAnim>() );
+		}
 
-			foreach ( var t in Summoner.Lerp.NormalizedDuration( 0.1f ) ) {
-				block.position = Vector3.Lerp( start, end, t );
-				yield return null;
+		public void Drop( Cell cell ) {
+			var anim = cell.block.GetComponent<FallAnim>();
+			if ( anim == null ) { 
+				anim = cell.block.gameObject.AddComponent<FallAnim>();
+				timeline.Last().Add( anim );
 			}
-			--isPlaying;
+
+			anim.Add( cell.transform.position );
+		}
+
+		public Coroutine Play() {
+			return StartCoroutine( PlayAux() );
+		}
+
+		private IEnumerator PlayAux() {
+			Play( timeline[0] );
+			for ( var i = 1; i < timeline.Count; ++i ) {
+				yield return waitTick;
+				Play( timeline[i] );
+			}
+
+			timeline.Clear();
+			MoveTimeline();
+
+			yield return new WaitWhile( () => isPlaying > 0 );
+		}
+
+		private void Play( IList<IAnim> anims ) {
+			foreach ( var anim in anims ) {
+				++isPlaying;
+				anim.Play( () => --isPlaying );
+			}
 		}
 	}
 }

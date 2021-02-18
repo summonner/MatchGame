@@ -16,6 +16,7 @@ namespace Summoner.MatchGame {
 		void Destroy( IEnumerable<CubeCoordinate> coords );
 		void Destroy( CubeCoordinate coord );
 
+		void MoveTimeline();
 		Task WaitAnim();
 	}
 
@@ -62,7 +63,7 @@ namespace Summoner.MatchGame {
 		void IBoard.Spawn( CubeCoordinate coord, int count ) {
 			Debug.Assert( count > 0 );
 
-			var spawner = cells[coord].spawner;
+			var spawner = cells[coord].GetComponent<Spawner>();
 			Debug.Assert( spawner != null, $"Tried to spawn a block from non-spawner cell, {coord}" );
 
 			var offset = FlatTopDirection.N * count;
@@ -84,9 +85,7 @@ namespace Summoner.MatchGame {
 
 		IEnumerable<KeyValuePair<CubeCoordinate, ICell>> IBoard.cells {
 			get {
-				foreach ( var cell in cells ) {
-					yield return new KeyValuePair<CubeCoordinate, ICell>( cell.Key, cell.Value );
-				}
+				return cells.Select( ( cell ) => new KeyValuePair<CubeCoordinate, ICell>( cell.Key, cell.Value ) );
 			}
 		}
 
@@ -96,6 +95,10 @@ namespace Summoner.MatchGame {
 			to.block = temp;
 		}
 
+		void IBoard.MoveTimeline() {
+			anim.MoveTimeline();
+		}
+
 		async Task IBoard.WaitAnim() {
 			TaskCompletionSource<bool> onAnimFinished = new TaskCompletionSource<bool>();
 			StartCoroutine( WaitAnim( onAnimFinished ) );
@@ -103,7 +106,7 @@ namespace Summoner.MatchGame {
 		}
 
 		private IEnumerator WaitAnim( TaskCompletionSource<bool> onFinished ) {
-			yield return new WaitWhile( () => ( anim.isPlaying > 0 ) );
+			yield return anim.Play();
 			onFinished.SetResult( true );
 		}
 

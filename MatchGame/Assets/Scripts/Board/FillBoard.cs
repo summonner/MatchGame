@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -20,16 +20,17 @@ namespace Summoner.MatchGame {
 		}
 
 		public async Task Do() {
-			SpawnBlocks( board );	// TODO : ÃÊ±â¹èÄ¡¸¦ ¸ÕÀúÇÏµµ·ÏÇÏ°í Á¦°Å.
+			SpawnBlocks( board );	// TODO : ì´ˆê¸°ë°°ì¹˜ë¥¼ ë¨¼ì €í•˜ë„ë¡í•˜ê³  ì œê±°.
 			FindStraightMoves();
-			await board.WaitAnim();
+			board.MoveTimeline();
 
 			while ( FindSlipMoves( board ) ) {
 				ApplyMoves( board );
 				SpawnBlocks( board );
-				await board.WaitAnim();
+				board.MoveTimeline();
 			};
 
+			await board.WaitAnim();
 			Debug.Assert( moves.Count <= 0 );
 			moves.Clear();
 		}
